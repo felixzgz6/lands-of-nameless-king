@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lands of Nameless King</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>👑 Lands of Nameless King</h1>
+    <p class="subtitle">Royal Land Division &amp; Building Regulations Advisor</p>
+  </header>
+
+  <main class="app-container">
+    <!-- START SCREEN SECTION -->
+    <section id="start-screen" class="screen">
+      <div class="card start-card">
+        <h2>Advisor Cleverton's Desk</h2>
+        <p class="intro-text">
+          Enter your name and choose a farmland sector to divide fairly among the villagers.
+        </p>
+
+        <div class="form-group">
+          <label for="player-name-input">Advisor Name (Required):</label>
+          <input
+            type="text"
+            id="player-name-input"
+            placeholder="Enter your name..."
+            maxlength="30"
+            autocomplete="off"
+          >
+          <p id="name-error" class="error-msg hidden">Please enter your name before starting a game.</p>
+        </div>
+
+        <div class="form-group">
+          <span class="label-title">Select Difficulty Level:</span>
+          <div class="level-selector" id="level-selector">
+            <button type="button" class="level-btn active" data-level="easy">
+              <span class="level-title">Easy</span>
+              <span class="level-meta">5 × 5 Grid • 5 Houses</span>
+            </button>
+            <button type="button" class="level-btn" data-level="medium">
+              <span class="level-title">Medium</span>
+              <span class="level-meta">7 × 7 Grid • 6 Houses</span>
+            </button>
+            <button type="button" class="level-btn" data-level="hard">
+              <span class="level-title">Hard</span>
+              <span class="level-meta">10 × 10 Grid • 12 Houses</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button type="button" id="start-game-btn" class="primary-btn">Start New Game</button>
+          <button type="button" id="toggle-rules-btn" class="secondary-btn">Read Game Rules</button>
+        </div>
+      </div>
+
+      <!-- RULES PANEL -->
+      <div id="rules-panel" class="card hidden">
+        <div class="panel-header">
+          <h2>📜 Royal Decree &amp; Building Regulations</h2>
+          <button type="button" id="close-rules-btn" class="small-btn">Close</button>
+        </div>
+        <div class="rules-content">
+          <div class="rules-column">
+            <h3>Win Conditions</h3>
+            <ul>
+              <li><strong>Every Cell Decided:</strong> Every cell must be either a House, a Wall, or marked as Property.</li>
+              <li><strong>Correct Property Size:</strong> Each house's connected property must equal the number on the house (including the house cell itself).</li>
+              <li><strong>Connected Properties:</strong> Property cells must connect horizontally or vertically (not diagonally).</li>
+              <li><strong>One House per Property:</strong> No two houses may belong to the same connected property area.</li>
+              <li><strong>Separated Properties:</strong> Different properties must be separated by walls (diagonal corner contact is allowed).</li>
+              <li><strong>Connected Wall System:</strong> All wall cells must form a single continuous orthogonal network.</li>
+              <li><strong>No 2×2 Wall Blocks:</strong> Walls must never completely fill any 2×2 area.</li>
+            </ul>
+          </div>
+          <div class="rules-column">
+            <h3>Controls &amp; Legend</h3>
+            <ul>
+              <li><strong>Left Click / Drag:</strong> Place or remove a stone <strong>Wall</strong>. Dragging applies the initial action across cells.</li>
+              <li><strong>Right Click / Drag:</strong> Mark or unmark a cell as <strong>Property</strong> (wall-free land).</li>
+              <li><strong>Houses:</strong> Fixed on the board and cannot be modified.</li>
+              <li><strong>Red Highlight:</strong> Indicates an invalid state (property enclosed and too small, marked property too large, or a 2×2 wall block).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-panels">
+        <!-- SAVED GAMES PANEL -->
+        <div class="card">
+          <h2>💾 Saved Games</h2>
+          <div id="saved-games-list" class="list-container">
+            <p class="empty-msg">No saved games found.</p>
+          </div>
+        </div>
+
+        <!-- LEADERBOARD PANEL -->
+        <div class="card">
+          <h2>🏆 The King's Book of Glory</h2>
+          <div class="leaderboard-tabs" id="leaderboard-tabs">
+            <button type="button" class="tab-btn active" data-board="easy">Easy</button>
+            <button type="button" class="tab-btn" data-board="medium">Medium</button>
+            <button type="button" class="tab-btn" data-board="hard">Hard</button>
+          </div>
+          <div id="leaderboard-list" class="list-container">
+            <p class="empty-msg">No records for this level yet.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN SECTION -->
+    <section id="game-screen" class="screen hidden">
+      <div class="game-top-bar card">
+        <div class="info-group">
+          <div class="info-item">
+            <span class="info-label">Advisor:</span>
+            <span id="display-player-name" class="info-value">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Level:</span>
+            <span id="display-level-name" class="info-value">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Elapsed Time:</span>
+            <span id="display-timer" class="info-value timer-badge">00:00</span>
+          </div>
+        </div>
+
+        <div class="game-controls">
+          <button type="button" id="fill-property-btn" class="secondary-btn" title="Mark all remaining undecided cells as Property">
+            Mark Undecided as Property
+          </button>
+          <button type="button" id="save-game-btn" class="secondary-btn">Save Game</button>
+          <button type="button" id="back-menu-btn" class="danger-btn">Main Menu</button>
+        </div>
+      </div>
+
+      <!-- STATUS & ERROR FEEDBACK BANNER -->
+      <div id="status-banner" class="status-banner">
+        <span id="status-text">Left-click (or drag) to build walls. Right-click (or drag) to mark property cells.</span>
+      </div>
+
+      <div class="board-wrapper">
+        <div id="game-board" class="game-board" aria-label="Game Board"></div>
+      </div>
+
+      <!-- LEGEND -->
+      <div class="legend-bar card">
+        <div class="legend-item">
+          <span class="legend-swatch swatch-undecided"></span>
+          <span>Undecided Cell</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch swatch-property"></span>
+          <span>Marked Property (Right-Click)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch swatch-wall"></span>
+          <span>Wall (Left-Click)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch swatch-house">5</span>
+          <span>House (Inhabitants)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch swatch-error"></span>
+          <span>Rule Violation</span>
+        </div>
+      </div>
+
+      <!-- VICTORY MODAL -->
+      <div id="victory-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+          <h2>🎉 Royal Decree Fulfilled!</h2>
+          <p class="victory-subtitle">The land has been divided fairly according to all regulations!</p>
+          <div class="victory-stats">
+            <p><strong>Advisor:</strong> <span id="victory-player">-</span></p>
+            <p><strong>Completed Level:</strong> <span id="victory-level">-</span></p>
+            <p><strong>Completion Time:</strong> <span id="victory-time">-</span></p>
+          </div>
+          <p class="victory-note">Your achievement has been inscribed in The King's Book of Glory.</p>
+          <button type="button" id="victory-menu-btn" class="primary-btn">Return to Main Menu</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
